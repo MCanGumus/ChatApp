@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Shared.Extensions;
+using Shared.Extension;
 
 namespace ChatApp.Features.SendMessage
 {

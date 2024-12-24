@@ -1,7 +1,7 @@
 using ChatApp;
 using ChatApp.Features.SendMessage;
 using Shared;
-using Shared.Extensions;
+using Shared.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
 

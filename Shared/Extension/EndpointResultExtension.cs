@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared.Extensions
+namespace Shared.Extension
 {
     public static class EndpointResultExtension
     {
