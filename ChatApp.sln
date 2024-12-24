@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirstClient", "src\Clients\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecondClient", "src\Clients\SecondClient\SecondClient.csproj", "{837327E1-EB1F-4B81-8A37-1413A1A01F6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClient", "src\Clients\WebClient\WebClient.csproj", "{1C0D1525-BAC8-493D-A89F-F53F283CC249}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{837327E1-EB1F-4B81-8A37-1413A1A01F6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{837327E1-EB1F-4B81-8A37-1413A1A01F6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{837327E1-EB1F-4B81-8A37-1413A1A01F6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C0D1525-BAC8-493D-A89F-F53F283CC249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C0D1525-BAC8-493D-A89F-F53F283CC249}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C0D1525-BAC8-493D-A89F-F53F283CC249}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C0D1525-BAC8-493D-A89F-F53F283CC249}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,5 +55,6 @@ Global
 		{DB127970-0B4C-449F-B4B9-D6B93E0A709C} = {145487D6-DF74-4DD8-8854-73BF4833C0F2}
 		{0D54BED3-02A5-4B23-B5F2-42A789E79D86} = {DB127970-0B4C-449F-B4B9-D6B93E0A709C}
 		{837327E1-EB1F-4B81-8A37-1413A1A01F6E} = {DB127970-0B4C-449F-B4B9-D6B93E0A709C}
+		{1C0D1525-BAC8-493D-A89F-F53F283CC249} = {DB127970-0B4C-449F-B4B9-D6B93E0A709C}
 	EndGlobalSection
 EndGlobal

@@ -7,7 +7,7 @@ namespace ChatApp.Features.SendMessage
     {
         public async Task<ServiceResult> Handle(SendMessageCommandRequest request, CancellationToken cancellationToken)
         {
-            await hub.SendMessage(request.toWho, request.message);
+            //await hub.SendMessage(request.toWho, request.message);
 
             return ServiceResult.SuccessAsNoContent();
         }

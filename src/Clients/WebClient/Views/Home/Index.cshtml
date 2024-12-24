@@ -1,0 +1,133 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: row;
+        }
+
+        #active-users {
+            width: 250px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        #chat-panel {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-messages {
+            flex-grow: 1;
+            padding: 15px;
+            background-color: #e9ecef;
+            overflow-y: auto;
+        }
+
+        #message-input {
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .message-user {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="row">
+        <div id="active-users" class="border-end col-4">
+            <h5>Aktif Kullanıcılar</h5>
+            <ul class="list-group" id="user-list">
+                <!-- Aktif kullanıcılar burada listelenecek -->
+            </ul>
+        </div>
+        <div id="chat-panel" class="col-8">
+            <div id="chat-messages">
+                <!-- Sohbet mesajları burada görüntülenecek -->
+            </div>
+            <div id="message-input">
+                <input type="text" id="message" class="form-control" placeholder="Mesajınızı buraya yazın..." />
+                <button id="send-message" class="btn btn-primary mt-2">Mesaj Gönder</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script>
+        $(document).ready(function() {
+            // SignalR bağlantısını oluştur
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("http://localhost:7040/chatHub?userId=deneme_3") // SignalR hub'ınızın URL'si
+                .build();
+
+            // Mesaj alındığında
+            connection.on("ReceiveMessage", function(user, message) {
+                // Sohbet mesajını ekle
+                const messageDiv = $('<div class="message"></div>');
+                messageDiv.html(`<span class="message-user">${user}:</span> ${message}`);
+                $('#chat-messages').append(messageDiv);
+            });
+
+            // Bağlı kullanıcıları al
+            connection.on("GetConnectedUsers", function(users) {
+                const userList = $('#user-list');
+                userList.empty(); // Listeyi temizle
+                $.each(users, function(userId, username) {
+                    const userItem = $('<li class="list-group-item"></li>');
+                    userItem.text(userId);
+                    userItem.on('click', function() {
+                        openChat(userId, username);
+                    });
+                    userList.append(userItem);
+                });
+            });
+
+            // Kullanıcıya ait sohbeti aç
+            function openChat(userId, username) {
+                $('#chat-messages').empty(); // Önceki sohbeti temizle
+                $('#message-input').show(); // Mesaj kutusunu göster
+                // Burada kullanıcının sohbetine dair herhangi bir önceden gönderilmiş mesajları yükleyebilirsiniz
+            }
+
+            // Mesaj gönderme
+            $('#send-message').on('click', function() {
+                const message = "deneme_3: " + $('#message').val();
+                if (message) {
+                    const userId = "deneme_2"; // Burada hedef kullanıcıyı belirleyin
+                    connection.invoke("SendMessage", userId, message).then(function() {
+                        $('#message').val(''); // Mesajı gönderince input'u temizle
+                    }).catch(function(err) {
+                        console.error("Mesaj gönderme hatası: ", err);
+                    });
+                }
+            });
+
+            // SignalR bağlantısını başlat
+            connection.start().then(function() {
+                console.log("SignalR bağlantısı başarılı");
+            }).catch(function(err) {
+                console.error("SignalR bağlantısı başarısız: ", err);
+            });
+        });
+    </script>
+
+</body>
+

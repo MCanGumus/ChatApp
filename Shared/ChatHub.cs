@@ -3,31 +3,39 @@ using System.Collections.Concurrent;
 
 public class ChatHub : Hub
 {
-    private static readonly ConcurrentDictionary<Guid, string> ConnectedUsers = new();
+    private static readonly ConcurrentDictionary<string, string> ConnectedUsers = new();
 
-    public override Task OnConnectedAsync()
+    private async Task UpdateConnectedUsers()
     {
-        var userId = Context.GetHttpContext()?.Request.Query["userId"];
-        if (Guid.TryParse(userId, out var guid))
-        {
-            ConnectedUsers[guid] = Context.ConnectionId;
-        }
-
-        return base.OnConnectedAsync();
+        await Clients.All.SendAsync("GetConnectedUsers", ConnectedUsers);
     }
 
-    public override Task OnDisconnectedAsync(Exception? exception)
+    public override async Task OnConnectedAsync()
+    {
+        var userId = Context.GetHttpContext()?.Request.Query["userId"];
+
+        ConnectedUsers[userId] = Context.ConnectionId;
+
+
+        await UpdateConnectedUsers();
+
+        await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var userId = ConnectedUsers.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
-        if (userId != Guid.Empty)
+
+        if (string.IsNullOrEmpty(userId))
         {
             ConnectedUsers.TryRemove(userId, out _);
         }
+        await UpdateConnectedUsers();
 
-        return base.OnDisconnectedAsync(exception);
+        await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task SendMessage(Guid toWho, string message)
+    public async Task SendMessage(string toWho, string message)
     {
         if (ConnectedUsers.TryGetValue(toWho, out var connectionId))
         {

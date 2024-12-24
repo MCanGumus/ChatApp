@@ -1,39 +1,53 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using System.Diagnostics.Metrics;
 
+Console.WriteLine("Welcome to ChatApp. Please enter your nickname.");
+//string name = Console.ReadLine().ToString();
+
+string name = "deneme_1";
+#region Connection States
 var connection = new HubConnectionBuilder()
-    .WithUrl("http://localhost:7037/chatHub?userId=ba6b870b-e74c-42b3-8c31-5d3f18ee2f6a") // Kullanıcı kimliği query string'de
+    .WithUrl($"http://localhost:7040/chatHub?userId={name}") // Kullanıcı kimliği query string'de
     .Build();
-
-// Sunucudan gelen mesajları dinlemek için bir yöntem tanımlayın
-connection.On<string>("ReceiveMessage", message =>
-{
-    Console.WriteLine($"{message.Split(':')[0]}: {message.Split(':')[1]}");
-});
 
 try
 {
-    // Bağlantıyı başlat
     await connection.StartAsync();
-    Console.WriteLine("SignalR bağlantısı başarılı!");
 }
 catch (Exception ex)
 {
     Console.WriteLine($"Bağlantı hatası: {ex.Message}");
 }
+#endregion
 
-string name = "Mezyet";
 
-// Mesaj gönderme
+#region Listeners
+connection.On<string>("ReceiveMessage", message =>
+{
+    Console.WriteLine($"{message.Split(':')[0]}: {message.Split(':')[1]}");
+});
+
+connection.On<IDictionary<string, string>>("GetConnectedUsers", users => 
+{
+    foreach (var user in users)
+    {
+        Console.WriteLine($"{user.Key} / {user.Value}");
+    }
+});
+#endregion
+
+
+
+Console.WriteLine("Mesajınızı girin (çıkmak için 'q' yazın):");
+//// Mesaj gönderme
 while (true)
 {
-    Console.WriteLine("Mesajınızı girin (çıkmak için 'q' yazın):");
     var input = Console.ReadLine();
     if (input?.ToLower() == "q") break;
 
     try
     {
-        await connection.InvokeAsync("SendMessage", Guid.Parse("f9c03b33-89c3-4e34-b63f-5ada43f4ff57"), name + ":" + input);
-        Console.WriteLine("Mesaj gönderildi!");
+        await connection.InvokeAsync("SendMessage", "deneme_2", name + ":" + input);
     }
     catch (Exception ex)
     {
