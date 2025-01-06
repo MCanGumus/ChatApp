@@ -6,128 +6,381 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatApp</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
+        :root {
+            --dark-bg: #0a0a0a;
+            --dark-secondary: #121212;
+            --dark-surface: #1a1a1a;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --primary-color: #7c3aed;
+            --secondary-color: #a78bfa;
+            --accent-color: #c4b5fd;
+        }
+
         body {
             height: 100vh;
+            background: var(--dark-bg);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
             display: flex;
-            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container-fluid {
+            height: 100vh;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chat-container {
+            height: 85vh;
+            max-height: 900px;
+            width: 95%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--dark-bg) !important;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            position: relative;
+            top: -20px;
+        }
+
+        .footer {
+            display: none;
         }
 
         #active-users {
-            width: 250px;
-            background-color: #f8f9fa;
-            padding: 10px;
+            background: var(--dark-bg) !important;
+            border-right: none !important;
+            padding: 25px;
+            height: 100%;
             overflow-y: auto;
+        }
+
+        .user-list-item {
+            padding: 15px 20px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--dark-surface);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: var(--dark-surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .user-status {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .user-list-item:hover {
+            background: var(--dark-secondary);
+            transform: translateY(-2px);
+        }
+
+        .user-list-item.active {
+            background: var(--primary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .user-list-item.active .user-name,
+        .user-list-item.active .user-status {
+            color: white;
         }
 
         #chat-panel {
-            flex-grow: 1;
+            background: var(--dark-bg) !important;
+            height: 100%;
+        }
+
+        #chat-header {
+            padding: 20px 25px;
+            background: var(--dark-bg) !important;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-header-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--dark-surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .chat-header-info {
+            flex: 1;
+        }
+
+        #chattingWithId {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .chat-header-status {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .chat-header-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .header-action-btn {
+            width: 38px !important;
+            height: 38px !important;
+            border-radius: 50% !important;
+            padding: 0 !important;
+            background: var(--dark-surface) !important;
+            border: none !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .header-action-btn i {
+            font-size: 1rem;
+            color: var(--accent-color);
+            line-height: 1;
+        }
+
+        /* Gönder butonu için özel stil */
+        #send-message {
+            width: 38px !important;
+            height: 38px !important;
+            min-width: 38px !important;
+            border-radius: 50% !important;
+            padding: 0 !important;
+            background: var(--dark-surface) !important;
+            border: none !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.3s ease;
+        }
+
+        #send-message i {
+            font-size: 1rem;
+            color: var(--accent-color);
+            line-height: 1;
+        }
+
+        /* Hover efektleri */
+        .header-action-btn:hover,
+        #send-message:hover {
+            background: var(--primary-color) !important;
+            transform: translateY(-2px);
+        }
+
+        .header-action-btn:hover i,
+        #send-message:hover i {
+            color: white;
         }
 
         #chat-messages {
-            flex-grow: 1;
-            padding: 15px;
-            background-color: #e9ecef;
+            padding: 30px;
+            background: var(--dark-secondary);
+            background-image: 
+                radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.02) 2%, transparent 0%),
+                radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.02) 2%, transparent 0%);
+            background-size: 100px 100px;
+            height: calc(100% - 140px);
             overflow-y: auto;
         }
 
-        #message-input {
-            border-top: 1px solid #ccc;
-            padding: 10px;
-            background-color: #fff;
-        }
-
         .message {
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            max-width: 65%;
+            animation: slideIn 0.3s ease forwards;
         }
 
-        .message-user {
-            font-weight: bold;
+       
+        .message-right {
+            margin-left: auto;
+            background: var(--message-sent);
+            color: white;
+            border-radius: 16px 16px 0 16px;
+            padding: 15px 25px;
+        }
+
+        .message-left {
+            margin-right: auto;
+            background: var(--message-received);
+            color: var(--text-primary);
+            border-radius: 16px 16px 16px 0;
+            padding: 15px 25px;
+        }
+
+        #message-input {
+            padding: 20px;
+            background: var(--dark-bg);
+            border-top: 1px solid var(--border-color);
+            position: sticky;
+            bottom: 0;
+        }
+
+        .input-group {
+            background: var(--dark-surface);
+            border-radius: 16px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #message {
+            border: none;
+            background: transparent;
+            padding: 12px 0;
+            font-size: 1rem;
+            flex: 1;
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        #message::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        /* Özel scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--dark-surface);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        /* Başlıklar */
+        h5 {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #chattingWithId {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 1.1rem;
         }
     </style>
 </head>
 <body>
-    <div class="row">
-        <div id="active-users" class="border-end col-4">
-            <h5>Aktif Kullanıcılar</h5>
-            <ul class="list-group" id="user-list">
-                <!-- Aktif kullanıcılar burada listelenecek -->
-            </ul>
-        </div>
-        <div id="chat-panel" class="col-8">
-            <div id="chat-messages">
-                <!-- Sohbet mesajları burada görüntülenecek -->
+    <div class="container-fluid">
+        <div id="chat-container" class="row">
+            <input type="hidden" id="myId"/>
+            <div id="active-users" class="col-md-4 col-lg-3">
+                <h5 class="mb-4">Aktif Kullanıcılar</h5>
+                <div class="list-group" id="user-list">
+                    <!-- Aktif kullanıcılar burada listelenecek -->
+                </div>
             </div>
-            <div id="message-input">
-                <input type="text" id="message" class="form-control" placeholder="Mesajınızı buraya yazın..." />
-                <button id="send-message" class="btn btn-primary mt-2">Mesaj Gönder</button>
+            
+            <div id="chat-panel" class="col-md-8 col-lg-9">
+                <div id="chat-header">
+                    <h6 id="chattingWithId" class="mb-0"></h6>
+                </div>
+                
+                <div id="chat-messages">
+                    <!-- Mesajlar burada listelenecek -->
+                </div>
+                
+                <div id="message-input">
+                    <div class="input-group">
+                        <input type="text" id="message" class="form-control" placeholder="Mesajınızı yazın...">
+                        <button id="send-message" class="btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
-    <script>
-        $(document).ready(function() {
-            // SignalR bağlantısını oluştur
-            const connection = new signalR.HubConnectionBuilder()
-                .withUrl("http://localhost:7040/chatHub?userId=deneme_3") // SignalR hub'ınızın URL'si
-                .build();
-
-            // Mesaj alındığında
-            connection.on("ReceiveMessage", function(user, message) {
-                // Sohbet mesajını ekle
-                const messageDiv = $('<div class="message"></div>');
-                messageDiv.html(`<span class="message-user">${user}:</span> ${message}`);
-                $('#chat-messages').append(messageDiv);
-            });
-
-            // Bağlı kullanıcıları al
-            connection.on("GetConnectedUsers", function(users) {
-                const userList = $('#user-list');
-                userList.empty(); // Listeyi temizle
-                $.each(users, function(userId, username) {
-                    const userItem = $('<li class="list-group-item"></li>');
-                    userItem.text(userId);
-                    userItem.on('click', function() {
-                        openChat(userId, username);
-                    });
-                    userList.append(userItem);
-                });
-            });
-
-            // Kullanıcıya ait sohbeti aç
-            function openChat(userId, username) {
-                $('#chat-messages').empty(); // Önceki sohbeti temizle
-                $('#message-input').show(); // Mesaj kutusunu göster
-                // Burada kullanıcının sohbetine dair herhangi bir önceden gönderilmiş mesajları yükleyebilirsiniz
-            }
-
-            // Mesaj gönderme
-            $('#send-message').on('click', function() {
-                const message = "deneme_3: " + $('#message').val();
-                if (message) {
-                    const userId = "deneme_2"; // Burada hedef kullanıcıyı belirleyin
-                    connection.invoke("SendMessage", userId, message).then(function() {
-                        $('#message').val(''); // Mesajı gönderince input'u temizle
-                    }).catch(function(err) {
-                        console.error("Mesaj gönderme hatası: ", err);
-                    });
-                }
-            });
-
-            // SignalR bağlantısını başlat
-            connection.start().then(function() {
-                console.log("SignalR bağlantısı başarılı");
-            }).catch(function(err) {
-                console.error("SignalR bağlantısı başarısız: ", err);
-            });
-        });
-    </script>
-
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
 </body>
 

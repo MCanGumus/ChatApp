@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using System.Diagnostics.Metrics;
 
 Console.WriteLine("Welcome to ChatApp. Please enter your nickname.");
@@ -22,12 +23,12 @@ catch (Exception ex)
 
 
 #region Listeners
-connection.On<string>("ReceiveMessage", message =>
+connection.On<string, string, string>("ReceiveMessage", (userId, username, message) =>
 {
-    Console.WriteLine($"{message.Split(':')[0]}: {message.Split(':')[1]}");
+    Console.WriteLine($"{message}");
 });
 
-connection.On<IDictionary<string, string>>("GetConnectedUsers", users => 
+connection.On<IDictionary<string, string>>("GetConnectedUsers", users =>
 {
     foreach (var user in users)
     {
@@ -47,7 +48,7 @@ while (true)
 
     try
     {
-        await connection.InvokeAsync("SendMessage", "deneme_2", name + ":" + input);
+        await connection.InvokeAsync("SendMessage", "deneme_3", "deneme_3", input);
     }
     catch (Exception ex)
     {

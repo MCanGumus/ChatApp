@@ -35,11 +35,16 @@ public class ChatHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task SendMessage(string toWho, string message)
+    public async Task SendMessage(string toWho, string userName, string message)
     {
         if (ConnectedUsers.TryGetValue(toWho, out var connectionId))
         {
-            await Clients.Client(connectionId).SendAsync("ReceiveMessage", message);
+            await Clients.Client(connectionId).SendAsync("ReceiveMessage", toWho, userName, message);
         }
+    }
+
+    public string GetObtainedClientId()
+    {
+        return Context.ConnectionId;
     }
 }
